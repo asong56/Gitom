@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Gitom{% endblock %}</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="/">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M6 10h8M10 6v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Gitom
+    </a>
+    <div class="nav-links">
+      <a href="/explore">探索</a>
+      {% if auth %}
+        <a href="/user/settings/repos/new" class="btn btn-sm">新建仓库</a>
+        <a href="/{{ auth.username }}" class="nav-avatar">{{ auth.username }}</a>
+        <form method="post" action="/user/logout" style="display:inline">
+          <button type="submit" class="btn btn-sm btn-ghost">退出</button>
+        </form>
+      {% else %}
+        <a href="/user/login" class="btn btn-sm btn-ghost">登录</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <span>Gitom &mdash; 自部署 · 极致轻量 · 纯 Git</span>
+</footer>
+</body>
+</html>

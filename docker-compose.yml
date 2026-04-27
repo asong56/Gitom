@@ -1,0 +1,19 @@
+services:
+  gitom:
+    image: gitom:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - gitom_data:/data
+    environment:
+      GITOM_JWT_SECRET: "change-me-generate-with-openssl-rand-hex-32"
+      GITOM_PASSWORD: "change-me"
+      # GITOM_ACCESS_TOKEN: ""    # optional static token for git clients / CI
+      # GITOM_USERNAME: "git"     # display name used in repo URLs
+      GITOM_SECURE_COOKIE: "false"
+      GITOM_TRUSTED_PROXY_DEPTH: "0"
+      GITOM_DATA_DIR: "/data"
+
+volumes:
+  gitom_data:

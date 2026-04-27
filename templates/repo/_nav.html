@@ -1,0 +1,24 @@
+{% macro repo_nav(rv, active, git_ref) %}
+<div class="repo-header">
+  <div class="repo-title">
+    <a href="/{{ rv.owner_username }}">{{ rv.owner_username }}</a>
+    <span class="sep">/</span>
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}"><strong>{{ rv.repo.name }}</strong></a>
+    {% if rv.repo.is_private %}<span class="badge">私有</span>{% endif %}
+  </div>
+  <nav class="repo-tabs">
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}"
+       class="{% if active == 'code' %}active{% endif %}">代码</a>
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/commits/{{ git_ref }}"
+       class="{% if active == 'commits' %}active{% endif %}">提交</a>
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/branches"
+       class="{% if active == 'branches' %}active{% endif %}">分支</a>
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tags"
+       class="{% if active == 'tags' %}active{% endif %}">标签</a>
+    {% if auth %}
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings"
+       class="{% if active == 'settings' %}active{% endif %}">设置</a>
+    {% endif %}
+  </nav>
+</div>
+{% endmacro %}

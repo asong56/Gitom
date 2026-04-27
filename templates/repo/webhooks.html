@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Webhook — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "settings", "") }}
+
+  <div class="settings-layout">
+    <nav class="settings-sidebar">
+      <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings">基本设置</a>
+      <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings/webhooks" class="active">Webhook</a>
+    </nav>
+    <div class="settings-body">
+      <section class="card">
+        <h3>添加 Webhook</h3>
+        <form method="post">
+          <div class="form-group">
+            <label>目标 URL</label>
+            <input type="url" name="url" required placeholder="https://example.com/hook" class="input">
+          </div>
+          <div class="form-group">
+            <label>Secret（可选）</label>
+            <input type="text" name="secret" placeholder="HMAC 签名密钥" class="input">
+          </div>
+          <div class="form-group">
+            <label>事件（逗号分隔）</label>
+            <input type="text" name="events" value="push" class="input">
+          </div>
+          <button type="submit" class="btn">添加</button>
+        </form>
+      </section>
+
+      {% if hooks %}
+      <section class="card">
+        <h3>已配置的 Webhook</h3>
+        {% for h in hooks %}
+        <div class="webhook-row">
+          <div class="webhook-url mono">{{ h.url }}</div>
+          <div class="webhook-events">{{ h.events | join(", ") }}</div>
+          <form method="post" action="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings/webhooks/{{ h.id }}/delete">
+            <button type="submit" class="btn btn-sm btn-danger">删除</button>
+          </form>
+        </div>
+        {% endfor %}
+      </section>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

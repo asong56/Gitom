@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ path }} — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "code", git_ref) }}
+
+  <div class="breadcrumb">
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}">{{ rv.repo.name }}</a>
+    {% set parts = path.split("/") %}
+    {% set ns = namespace(acc="") %}
+    {% for part in parts %}
+      {% set ns.acc = ns.acc ~ "/" ~ part %}
+      <span class="sep">/</span>
+      {% if loop.last %}
+        <span>{{ part }}</span>
+      {% else %}
+        <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ git_ref }}{{ ns.acc }}">{{ part }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="blob-header">
+    <span class="blob-size">{{ size | filesize }}</span>
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/raw/{{ git_ref }}/{{ path }}"
+       class="btn btn-sm btn-ghost">Raw</a>
+  </div>
+
+  {% if is_binary %}
+    <div class="empty-state"><p>二进制文件，无法预览。</p></div>
+  {% else %}
+    <div class="code-view">
+      <table class="code-table">
+        <tbody>
+          {% for line in text_content.split("\n") %}
+          <tr>
+            <td class="ln">{{ loop.index }}</td>
+            <td class="lc"><code>{{ line }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

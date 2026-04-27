@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}分支 — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "branches", "") }}
+  <div class="ref-list">
+    {% for b in branches %}
+    <div class="ref-row">
+      <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ b.name }}" class="ref-name mono">
+        {{ b.name }}
+        {% if b.is_head %}<span class="badge">HEAD</span>{% endif %}
+      </a>
+      <span class="ref-sha mono">{{ b.sha | truncate_sha }}</span>
+    </div>
+    {% else %}
+    <div class="empty-state"><p>暂无分支。</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

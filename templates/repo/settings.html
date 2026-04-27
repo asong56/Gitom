@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}设置 — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "settings", "") }}
+
+  <div class="settings-layout">
+    <nav class="settings-sidebar">
+      <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings" class="active">基本设置</a>
+      <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings/webhooks">Webhook</a>
+    </nav>
+    <div class="settings-body">
+      <section class="card">
+        <h3>仓库信息</h3>
+        <div class="form-group">
+          <label>仓库名称</label>
+          <input type="text" value="{{ rv.repo.name }}" readonly class="input">
+        </div>
+        <div class="form-group">
+          <label>描述</label>
+          <input type="text" value="{{ rv.repo.description }}" readonly class="input">
+        </div>
+        <div class="form-group">
+          <label>可见性</label>
+          <input type="text" value="{% if rv.repo.is_private %}私有{% else %}公开{% endif %}" readonly class="input">
+        </div>
+      </section>
+
+      <section class="card danger-zone">
+        <h3>危险操作</h3>
+        <p>删除仓库将永久移除所有数据，无法恢复。</p>
+        <form method="post" action="/{{ rv.owner_username }}/{{ rv.repo.name }}/settings/delete"
+              onsubmit="return confirm('确认删除仓库 {{ rv.repo.name }}？此操作不可恢复。')">
+          <button type="submit" class="btn btn-danger">删除仓库</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

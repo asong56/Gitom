@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ commit.short_sha }} — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "commits", commit.sha) }}
+
+  <div class="commit-detail">
+    <h2>{{ commit.subject }}</h2>
+    <div class="commit-info">
+      <span class="commit-author">{{ commit.author }} &lt;{{ commit.email }}&gt;</span>
+      <span class="commit-time">{{ commit.time_human }}</span>
+      <span class="mono commit-sha-full">{{ commit.sha }}</span>
+    </div>
+    {% if commit.message != commit.subject %}
+    <pre class="commit-body">{{ commit.message }}</pre>
+    {% endif %}
+  </div>
+
+  {% for file in diff %}
+  <div class="diff-file">
+    <div class="diff-file-header">
+      <span class="diff-status diff-status-{{ file.status }}">{{ file.status }}</span>
+      <span class="diff-path">{{ file.new_path }}</span>
+    </div>
+    {% if file.is_binary %}
+      <div class="diff-binary">二进制文件</div>
+    {% else %}
+      {% for hunk in file.hunks %}
+      <div class="diff-hunk">
+        <div class="diff-hunk-header">{{ hunk.header }}</div>
+        {% for line in hunk.lines %}
+        <div class="diff-line diff-line-{{ line.origin }}">
+          <span class="diff-origin">{{ line.origin }}</span>
+          <code>{{ line.content }}</code>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="empty-state"><p>此提交无文件变更。</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

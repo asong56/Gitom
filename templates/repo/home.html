@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ rv.owner_username }}/{{ rv.repo.name }} — Gitom{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "code", branch) }}
+
+  <div class="repo-clone-bar">
+    <code>git clone http://{{ request_host }}/{{ rv.owner_username }}/{{ rv.repo.name }}.git</code>
+  </div>
+
+  {% if entries %}
+  <div class="file-table">
+    <table>
+      <tbody>
+        {% for e in entries %}
+        <tr>
+          <td class="ft-icon">
+            {% if e.kind == "tree" %}
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 3h12v9H1z" stroke="currentColor" fill="none" stroke-width="1.2"/><path d="M1 3l3-2h3l1 2" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+            {% else %}
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 1h7l3 3v9H2z" stroke="currentColor" fill="none" stroke-width="1.2"/><path d="M9 1v3h3" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+            {% endif %}
+          </td>
+          <td class="ft-name">
+            {% if e.kind == "tree" %}
+              <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ branch }}/{{ e.path }}">{{ e.name }}</a>
+            {% else %}
+              <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/blob/{{ branch }}/{{ e.path }}">{{ e.name }}</a>
+            {% endif %}
+          </td>
+          <td class="ft-size">{% if e.size %}{{ e.size | filesize }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>仓库是空的</h3>
+    <pre class="clone-hint">git remote add origin http://{{ rv.owner_username }}@localhost/{{ rv.owner_username }}/{{ rv.repo.name }}.git
+git push -u origin main</pre>
+  </div>
+  {% endif %}
+
+  {% if readme %}
+  <div class="readme">
+    <div class="readme-header">README</div>
+    <div class="readme-body markdown">{{ readme }}</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

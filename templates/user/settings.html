@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}账户设置 — Gitom{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="settings-layout">
+    <nav class="settings-sidebar">
+      <a href="/user/settings" class="active">账户</a>
+      <a href="/user/settings/repos/new">新建仓库</a>
+    </nav>
+    <div class="settings-body">
+      <section class="card">
+        <h3>账户信息</h3>
+        <div class="form-group">
+          <label>用户名</label>
+          <input type="text" value="{{ auth.username }}" readonly class="input">
+        </div>
+        <p class="muted">如需修改密码，请更新 <code>GITOM_PASSWORD</code> 环境变量并重启服务。</p>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}探索 — Gitom{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>探索</h1>
+  </div>
+  {% if repos %}
+    <div class="repo-list">
+      {% for repo in repos %}
+        <a class="repo-card" href="/{{ owner_username }}/{{ repo.name }}">
+          <div class="repo-card-name">{{ repo.name }}</div>
+          {% if repo.description %}
+            <div class="repo-card-desc">{{ repo.description }}</div>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>暂无公开仓库。</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

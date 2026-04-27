@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Gitom — 首页{% endblock %}
+{% block content %}
+<div class="container">
+  {% if auth %}
+    <div class="page-header">
+      <h1>你好，{{ auth.username }}</h1>
+      <a href="/user/settings/repos/new" class="btn">+ 新建仓库</a>
+    </div>
+    {% if repos %}
+      <div class="repo-list">
+        {% for repo in repos %}
+          <a class="repo-card" href="/{{ auth.username }}/{{ repo.name }}">
+            <div class="repo-card-name">
+              {% if repo.is_private %}<span class="badge">私有</span>{% endif %}
+              {{ repo.name }}
+            </div>
+            {% if repo.description %}
+              <div class="repo-card-desc">{{ repo.description }}</div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>还没有仓库。<a href="/user/settings/repos/new">新建一个？</a></p>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="hero">
+      <h1>自部署 Git 代码管理</h1>
+      <p class="hero-sub">无社交功能，无多余噪音。只有仓库、提交、分支。</p>
+      <div class="hero-actions">
+        <a href="/user/login" class="btn btn-lg">登录</a>
+        <a href="/explore" class="btn btn-lg btn-ghost">浏览仓库</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

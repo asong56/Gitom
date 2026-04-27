@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ path }} — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "code", git_ref) }}
+
+  <div class="breadcrumb">
+    <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}">{{ rv.repo.name }}</a>
+    {% if path %}
+      {% set parts = path.split("/") %}
+      {% set ns = namespace(acc="") %}
+      {% for part in parts %}
+        {% set ns.acc = ns.acc ~ "/" ~ part %}
+        <span class="sep">/</span>
+        {% if loop.last %}
+          <span>{{ part }}</span>
+        {% else %}
+          <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ git_ref }}{{ ns.acc }}">{{ part }}</a>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="file-table">
+    <table>
+      <tbody>
+        {% if path %}
+        <tr>
+          <td class="ft-icon">↑</td>
+          <td class="ft-name" colspan="2">
+            <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ git_ref }}/{{ path | split("/") | slice(0, -1) | join("/") }}">..</a>
+          </td>
+        </tr>
+        {% endif %}
+        {% for e in entries %}
+        <tr>
+          <td class="ft-icon">
+            {% if e.kind == "tree" %}📁{% else %}📄{% endif %}
+          </td>
+          <td class="ft-name">
+            {% if e.kind == "tree" %}
+              <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/tree/{{ git_ref }}/{{ e.path }}">{{ e.name }}</a>
+            {% else %}
+              <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/blob/{{ git_ref }}/{{ e.path }}">{{ e.name }}</a>
+            {% endif %}
+          </td>
+          <td class="ft-size">{% if e.size %}{{ e.size | filesize }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

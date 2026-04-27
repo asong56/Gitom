@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ owner_username }} — Gitom{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>{{ owner_username }}</h1>
+    {% if auth %}
+      <a href="/user/settings/repos/new" class="btn">+ 新建仓库</a>
+    {% endif %}
+  </div>
+  {% if repos %}
+    <div class="repo-list">
+      {% for repo in repos %}
+        <a class="repo-card" href="/{{ owner_username }}/{{ repo.name }}">
+          <div class="repo-card-name">
+            {% if repo.is_private %}<span class="badge">私有</span>{% endif %}
+            {{ repo.name }}
+          </div>
+          {% if repo.description %}
+            <div class="repo-card-desc">{{ repo.description }}</div>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>还没有仓库。</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

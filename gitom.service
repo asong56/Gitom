@@ -1,0 +1,61 @@
+# =============================================================================
+# Gitom — systemd 服务单元示例
+#
+# 安装步骤：
+#   1. 创建运行用户（与 Docker 镜像保持一致）
+#        sudo useradd -r -s /sbin/nologin -d /var/lib/gitom gitom
+#
+#   2. 创建数据目录
+#        sudo mkdir -p /var/lib/gitom
+#        sudo chown gitom:gitom /var/lib/gitom
+#
+#   3. 下载对应平台的二进制并安装
+#        sudo install -m 755 gitom /usr/local/bin/gitom
+#
+#   4. 复制配置文件（参考 .env.example）
+#        sudo cp .env.example /etc/gitom.env
+#        sudo chmod 600 /etc/gitom.env
+#        sudo chown gitom:gitom /etc/gitom.env
+#        # 按需修改配置项
+#        sudo $EDITOR /etc/gitom.env
+#
+#   5. 安装并启动服务
+#        sudo cp gitom.service /etc/systemd/system/
+#        sudo systemctl daemon-reload
+#        sudo systemctl enable --now gitom
+#
+#   查看日志：
+#        sudo journalctl -u gitom -f
+# =============================================================================
+
+[Unit]
+Description=Gitom — self-hosted Git viewer
+Documentation=https://github.com/yourname/gitom
+After=network.target
+
+[Service]
+Type=simple
+User=gitom
+Group=gitom
+
+# 数据目录（SQLite 数据库 + Git 仓库）
+WorkingDirectory=/var/lib/gitom
+
+# 从独立配置文件读取环境变量（密钥不进 unit 文件）
+EnvironmentFile=/etc/gitom.env
+
+ExecStart=/usr/local/bin/gitom
+Restart=on-failure
+RestartSec=5s
+
+# ---- 安全加固 ----
+# 与 Docker 镜像的非 root 原则保持一致
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# 只允许读写数据目录
+ReadWritePaths=/var/lib/gitom
+
+[Install]
+WantedBy=multi-user.target

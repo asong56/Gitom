@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}提交历史 — {{ rv.owner_username }}/{{ rv.repo.name }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% from "repo/_nav.html" import repo_nav %}
+  {{ repo_nav(rv, "commits", git_ref) }}
+
+  <div class="commit-list">
+    {% for c in commits %}
+    <div class="commit-row">
+      <div class="commit-meta">
+        <span class="commit-author">{{ c.author }}</span>
+        <span class="commit-time">{{ c.time_human }}</span>
+      </div>
+      <div class="commit-subject">
+        <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/commit/{{ c.sha }}">{{ c.subject }}</a>
+      </div>
+      <div class="commit-sha">
+        <a href="/{{ rv.owner_username }}/{{ rv.repo.name }}/commit/{{ c.sha }}"
+           class="mono">{{ c.short_sha }}</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state"><p>暂无提交记录。</p></div>
+    {% endfor %}
+  </div>
+
+  <div class="pagination">
+    {% if page > 1 %}
+      <a href="?page={{ page - 1 }}&per_page={{ per_page }}" class="btn btn-sm btn-ghost">← 上一页</a>
+    {% endif %}
+    {% if commits | length == per_page %}
+      <a href="?page={{ page + 1 }}&per_page={{ per_page }}" class="btn btn-sm btn-ghost">下一页 →</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
