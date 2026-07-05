@@ -3,7 +3,7 @@ name        = "gitom"
 version     = "1.0.0"
 edition     = "2021"
 license     = "MIT"
-description = "自部署 · 无社交 · 纯 Git · 单二进制 · 单用户"
+description = "Self Deploy · No Social · Pure Git · Single Binary Executable · Single User"
 
 [[bin]]
 name = "gitom"
@@ -15,14 +15,15 @@ tokio              = { version = "1", features = [
     "sync", "signal", "process", "macros"
 ] }
 axum               = { version = "0.7", features = ["json", "macros"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
 # reqwest is used only for webhook delivery (no OAuth2)
 reqwest            = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
 serde              = { version = "1", features = ["derive"] }
 serde_json         = "1"
-minijinja          = { version = "2", default-features = false, features = ["loader", "builtins"] }
+minijinja          = { version = "2", default-features = false, features = ["loader", "builtins", "serde"] }
 sqlx               = { version = "0.8", features = ["sqlite", "runtime-tokio", "migrate"] }
 tracing            = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 config             = { version = "0.14", default-features = false, features = ["toml"] }
 argon2             = "0.5"
 hmac               = "0.12"

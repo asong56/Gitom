@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 use git2::{BranchType, Delta, DiffOptions, ObjectType, Repository, Sort};
 use serde::{Deserialize, Serialize};
 

@@ -50,13 +50,21 @@ pub struct AppState {
 #[tokio::main]
 async fn main() {
     let use_json = std::env::var("GITOM_LOG_JSON").as_deref() == Ok("true");
-    let registry = tracing_subscriber::registry()
-        .with(EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| EnvFilter::new("gitom=info")));
+    let fmt_layer = tracing_subscriber::fmt::layer();
+    
+    let filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("gitom=info"));
+
     if use_json {
-        registry.with(tracing_subscriber::fmt::layer().json()).init();
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer.json())
+            .init();
     } else {
-        registry.with(tracing_subscriber::fmt::layer().compact()).init();
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer.compact())
+            .init();
     }
 
     let mut cfg = AppConfig::load().unwrap_or_else(|e| {

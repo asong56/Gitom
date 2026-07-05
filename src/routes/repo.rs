@@ -98,7 +98,8 @@ fn repo_disk_path(state: &AppState, username: &str, reponame: &str) -> Result<st
     validate_path_segment(reponame)?;
     let name = if reponame.ends_with(".git") { reponame.to_string() } else { format!("{reponame}.git") };
     let abs  = state.config.resolve_git_path(&format!("{username}/{name}"));
-    let root = std::path::Path::new(&state.config.repo_root());
+    let repo_root_str = state.config.repo_root();
+    let root = std::path::Path::new(&repo_root_str);
     if !abs.starts_with(root) {
         return Err(AppError::BadRequest("path traversal detected".into()));
     }

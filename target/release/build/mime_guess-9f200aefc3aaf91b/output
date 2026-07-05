@@ -1,0 +1,1 @@
+cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/workspaces/Gitom/target/release/build/mime_guess-9f200aefc3aaf91b/out/mime_types_generated.rs
