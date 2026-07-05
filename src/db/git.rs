@@ -129,7 +129,9 @@ pub fn list_commits(repo: &Repository, ref_name: &str, page: u32, per_page: u32)
     walk.push(obj.id())?;
     walk.set_sorting(Sort::TIME)?;
 
-    let skip  = ((page - 1) * per_page) as usize;
+    // Bug fix: cast to u64 before multiplying to prevent u32 overflow when page
+    // is a very large value (in release mode overflow silently wraps).
+    let skip  = (page as u64 - 1).saturating_mul(per_page as u64) as usize;
     let limit = per_page as usize;
     let mut out = Vec::with_capacity(limit);
     for (i, oid) in walk.enumerate() {
@@ -246,7 +248,10 @@ fn relative_time(unix: i64) -> String {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs() as i64;
-    let diff = now - unix;
+    // Bug fix: clamp to 0 so that a future timestamp (e.g. due to clock skew on
+    // the committer's machine) doesn't produce a negative value that falls through
+    // to the last match arm and renders as "-5 days ago".
+    let diff = (now - unix).max(0);
     match diff {
         0..=59       => "just now".into(),
         60..=3599    => format!("{} minutes ago", diff / 60),

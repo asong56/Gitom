@@ -361,6 +361,10 @@ async fn git_info_refs(
         return Err(AppError::NotFound);
     }
     let service = q.service.as_deref().unwrap_or("git-upload-pack");
+    // Bug fix: validate service to prevent running arbitrary git subcommands.
+    if !matches!(service, "git-upload-pack" | "git-receive-pack") {
+        return Err(AppError::BadRequest("unsupported git service".into()));
+    }
     let is_push = service == "git-receive-pack";
     let repo    = queries::get_repo(&s.db.pool, &p.repo).await?.ok_or(AppError::NotFound)?;
 
@@ -503,14 +507,17 @@ async fn run_git_command(
     let mut child = cmd.spawn()
         .map_err(|e| AppError::Internal(anyhow::anyhow!("git spawn failed: {e}")))?;
 
-    if let Some(data) = stdin {
-        if let Some(mut stdin_handle) = child.stdin.take() {
-            stdin_handle.write_all(data).await
-                .map_err(|e| AppError::Internal(anyhow::anyhow!("git stdin write failed: {e}")))?;
-        }
-    }
-
+    // Bug fix: the stdin write must also be inside the timeout block so that a git
+    // process that stalls before reading its input does not hang indefinitely.
     let result = tokio::time::timeout(GIT_TIMEOUT, async {
+        if let Some(data) = stdin {
+            if let Some(mut stdin_handle) = child.stdin.take() {
+                stdin_handle.write_all(data).await
+                    .map_err(|e| AppError::Internal(anyhow::anyhow!("git stdin write failed: {e}")))?;
+                // Drop the handle to close stdin so the child process sees EOF.
+            }
+        }
+
         let mut buf     = Vec::new();
         let mut err_buf = Vec::new();
         {

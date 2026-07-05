@@ -147,11 +147,15 @@ async fn new_repo_post(
     let git_rel = format!("{}/{}.git", state.config.username, f.name);
     let git_abs = state.config.resolve_git_path(&git_rel);
 
-    git::init_bare(
+    // Bug fix: clean up the (possibly partially-created) directory when init_bare
+    // fails, not only when the subsequent DB insert fails.
+    if let Err(e) = git::init_bare(
         git_abs.to_str()
             .ok_or_else(|| AppError::Internal(anyhow::anyhow!("path contains non-UTF-8 characters")))?
-    )
-    .map_err(AppError::Internal)?;
+    ) {
+        let _ = std::fs::remove_dir_all(&git_abs);
+        return Err(AppError::Internal(e));
+    }
 
     if let Err(e) = queries::create_repo(
         &state.db.pool,
