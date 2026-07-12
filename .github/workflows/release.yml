@@ -5,13 +5,14 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     name: Build for ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     
-    permissions:
-      contents: write
     strategy:
       matrix:
         include:
